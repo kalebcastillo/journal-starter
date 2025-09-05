@@ -32,7 +32,7 @@ By the end of this capstone, your API should be working locally and ready for cl
 - [🤝 Contributing](#-contributing)
 - [📄 License](#-license)
 
-## �🚀 Getting Started
+## 🚀 Getting Started
 
 ### Prerequisites
 
