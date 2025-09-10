@@ -7,27 +7,13 @@ By the end of this capstone, your API should be working locally and ready for cl
 ## Table of Contents
 
 - [🚀 Getting Started](#-getting-started)
-  - [Prerequisites](#prerequisites)
-  - [1. Fork and Clone the Repository](#1-fork-and-clone-the-repository)
-  - [2. Configure Your Environment (.env)](#2-configure-your-environment-env)
-  - [3. Set Up Your Development Environment](#3-set-up-your-development-environment)
-  - [4. Verify the PostgreSQL Database Is Running](#4-verify-the-postgresql-database-is-running)
-  - [5. Run the API](#5-run-the-api)
-  - [6. Test Everything Works! 🎉](#6-test-everything-works-)
-- [�️ Explore Your Database (Optional)](#️-explore-your-database-optional)
-  - [1. Install PostgreSQL Extension](#1-install-postgresql-extension)
-  - [2. Connect to Your Database](#2-connect-to-your-database)
-  - [3. Explore Your Data](#3-explore-your-data)
-- [Project Structure](#project-structure)
-- [Your Learning Goals](#your-learning-goals)
 - [🎯 Development Tasks (Your Work!)](#-development-tasks-your-work)
   - [1. API Implementation (Required)](#1-api-implementation-required)
   - [2. Logging Setup (Required)](#2-logging-setup-required)
   - [3. Data Model Improvements (Optional)](#3-data-model-improvements-optional)
   - [4. Cloud CLI Setup (Required for Deployment)](#4-cloud-cli-setup-required-for-deployment)
 - [📊 Data Schema](#-data-schema)
-- [🔌 API Endpoints](#-api-endpoints)
-- [✅ How to Complete This Project](#-how-to-complete-this-project)
+- [�️ Explore Your Database (Optional)](#️-explore-your-database-optional)
 - [🔧 Troubleshooting](#-troubleshooting)
 - [🤝 Contributing](#-contributing)
 - [📄 License](#-license)
@@ -83,9 +69,9 @@ Environment variables live in a `.env` file (which is **git-ignored** so you don
 
 In a terminal outside of VS Code, run:
 
-```bash
-   docker ps
-```
+   ```bash
+      docker ps
+   ```
 
 You should see the postgres service running.
 
@@ -93,9 +79,9 @@ You should see the postgres service running.
 
 Make sure you are in the root of your project in the terminal:
 
-```bash
-   ./start.sh
-```
+   ```bash
+     ./start.sh
+   ```
 
 ### 6. Test Everything Works! 🎉
 
@@ -104,6 +90,62 @@ Make sure you are in the root of your project in the terminal:
 1. **View your entries** using the GET `/entries` endpoint to see what you've created!
 
 **🎯 Once you can create and see entries, you're ready to start implementing the missing endpoints!**
+
+## Your Learning Goals
+
+Complete a Journal API that allows users to:
+
+- ✅ **Store journal entries** (already implemented)
+- ✅ **Retrieve all journal entries** (already implemented)
+- ❌ **Retrieve single journal entry** (you need to implement)  
+- ❌ **Delete specific journal entries** (you need to implement)
+- ✅ **Update journal entries** (already implemented)
+- ✅ **Delete all entries** (already implemented)
+- ❌ **Setup logging** (you need to implement)
+
+## 🎯 Development Tasks (Your Work!)
+
+You'll use **feature branches** and **Pull Requests (PRs)** for each task. Complete these tasks in your forked repository using feature branches.
+
+### 1. API Implementation (Required)
+
+#### Task 1a: GET Single Entry Endpoint
+
+- Branch: `feature/get-single-entry`
+- [ ] Implement **GET /entries/{entry_id}** in `api/routers/journal_router.py`
+
+#### Task 1b: DELETE Single Entry Endpoint
+
+- Branch: `feature/delete-entry`
+- [ ] Implement **DELETE /entries/{entry_id}** in `api/routers/journal_router.py`
+
+### 2. Logging Setup (Required)
+
+- Branch: `feature/logging-setup`
+- [ ] Configure logging in `api/main.py`
+
+### 3. Data Model Improvements (Optional)
+
+- Branch: `feature/data-model-improvements`  
+- [ ] Add validators to `api/models/entry.py`
+
+### 4. Cloud CLI Setup (Required for Deployment)
+
+- Branch: `feature/cloud-cli-setup`
+- [ ] Uncomment one CLI tool in `.devcontainer/devcontainer.json`
+
+## 📊 Data Schema
+
+Each journal entry follows this structure:
+
+| Field       | Type      | Description                                | Validation                   |
+|-------------|-----------|--------------------------------------------|------------------------------|
+| id          | string    | Unique identifier (UUID)                   | Auto-generated               |
+| work        | string    | What did you work on today?                | Required, max 256 characters |
+| struggle    | string    | What's one thing you struggled with today? | Required, max 256 characters |
+| intention   | string    | What will you study/work on tomorrow?      | Required, max 256 characters |
+| created_at  | datetime  | When entry was created                     | Auto-generated UTC           |
+| updated_at  | datetime  | When entry was last updated                | Auto-updated UTC             |
 
 ## 🗄️ Explore Your Database (Optional)
 
@@ -143,109 +185,6 @@ Want to see your data directly in the database? You can connect to PostgreSQL us
 
 You can now explore the database structure, see exactly how your data is stored, and run custom queries to understand PostgreSQL better.
 
-## Project Structure
-
-This project uses a clean FastAPI architecture with PostgreSQL:
-
-```txt
-api/
-├── main.py                    # FastAPI app entry point
-├── requirements.txt           # Python dependencies  
-├── models/
-│   └── entry.py              # Pydantic data models
-├── repositories/
-│   ├── interface_repository.py    # Database interface
-│   └── postgres_repository.py     # PostgreSQL implementation
-├── routers/
-│   └── journal_router.py     # API endpoints (YOUR MAIN WORK HERE)
-└── services/
-    └── entry_service.py      # Business logic layer
-```
-
-## Your Learning Goals
-
-Complete a Journal API that allows users to:
-
-- ✅ **Store journal entries** (already implemented)
-- ✅ **Retrieve all journal entries** (already implemented)
-- ❌ **Retrieve single journal entry** (you need to implement)  
-- ❌ **Delete specific journal entries** (you need to implement)
-- ✅ **Update journal entries** (already implemented)
-- ✅ **Delete all entries** (already implemented)
-- ❌ **Setup logging** (you need to implement)
-
-## 🎯 Development Tasks (Your Work!)
-
-### 1. API Implementation (Required)
-
-**File: `api/routers/journal_router.py`**
-
-Implement these missing endpoints:
-
-- [ ] **GET /entries/{entry_id}** - Get single entry by ID  
-- [ ] **DELETE /entries/{entry_id}** - Delete specific entry
-
-Each endpoint has detailed TODO comments with step-by-step guidance!
-
-### 2. Logging Setup (Required)
-
-**File: `api/main.py`**
-
-- [ ] Configure basic logging using `logging.basicConfig()`
-- [ ] Set logging level to INFO
-- [ ] Add console handler
-- [ ] Test with a startup log message
-
-### 3. Data Model Improvements (Optional)
-
-**File: `api/models/entry.py`**
-
-- [ ] Add custom field validators (e.g., minimum length)
-- [ ] Add data sanitization methods
-- [ ] Add schema version tracking
-
-### 4. Cloud CLI Setup (Required for Deployment)
-
-**File: `.devcontainer/devcontainer.json`**
-
-- [ ] Choose and uncomment ONE cloud CLI tool:
-  - Azure CLI: `"ghcr.io/devcontainers/features/azure-cli:1": {}`
-  - AWS CLI: `"ghcr.io/devcontainers/features/aws-cli:1": {}`  
-  - Google Cloud CLI: `"ghcr.io/devcontainers/features/gcloud:1": {}`
-
-## 📊 Data Schema
-
-Each journal entry follows this structure:
-
-| Field       | Type      | Description                                | Validation                   |
-|-------------|-----------|--------------------------------------------|------------------------------|
-| id          | string    | Unique identifier (UUID)                   | Auto-generated               |
-| work        | string    | What did you work on today?                | Required, max 256 characters |
-| struggle    | string    | What's one thing you struggled with today? | Required, max 256 characters |
-| intention   | string    | What will you study/work on tomorrow?      | Required, max 256 characters |
-| created_at  | datetime  | When entry was created                     | Auto-generated UTC           |
-| updated_at  | datetime  | When entry was last updated                | Auto-updated UTC             |
-
-## 🔌 API Endpoints
-
-| Method | Endpoint           | Status | Description                    |
-|--------|--------------------|--------|--------------------------------|
-| POST   | /entries           | ✅ Done | Create new journal entry       |
-| GET    | /entries           | ✅ Done | List all journal entries       |
-| GET    | /entries/{id}      | ❌ TODO | Get single entry by ID         |
-| PATCH  | /entries/{id}      | ✅ Done | Update existing entry          |
-| DELETE | /entries/{id}      | ❌ TODO | Delete specific entry          |
-| DELETE | /entries           | ✅ Done | Delete all entries             |
-
-## ✅ How to Complete This Project
-
-1. **Start by running the existing API** - make sure it works
-2. **Study the working endpoints** - understand the patterns
-3. **Implement missing endpoints one by one** - follow the TODO comments
-4. **Test each endpoint** - use the /docs page to test
-5. **Add logging** - see your API in action
-6. **Choose a cloud CLI** - prepare for deployment
-
 ## 🔧 Troubleshooting
 
 **If the API won't start:**
@@ -283,19 +222,6 @@ Found a bug or have a suggestion? Please [open an issue](https://github.com/lear
 
 This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) file for details.
 
-### What This Means
-
-- ✅ **Commercial use** - You can use this code in commercial projects
-- ✅ **Modification** - You can modify and distribute the code
-- ✅ **Distribution** - You can distribute the original or modified code
-- ✅ **Private use** - You can use this code for personal projects
-- ❌ **Liability** - The authors are not liable for any damages
-- ❌ **Warranty** - This code comes with no warranty
-
 ### Attribution
 
 If you use this project as a foundation for your own work, we'd appreciate a link back to this repository, but it's not required.
-
----
-
-**Happy coding! 🚀** Built with ❤️ for learning cloud development.
