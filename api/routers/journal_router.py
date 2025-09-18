@@ -1,7 +1,6 @@
 import logging
 from typing import AsyncGenerator
-from fastapi import APIRouter, HTTPException, Request, Depends
-from fastapi.encoders import jsonable_encoder
+from fastapi import APIRouter, HTTPException, Depends, Response
 from repositories.postgres_repository import PostgresDB
 from services.entry_service import EntryService
 from models.entry import Entry, EntryCreate
@@ -20,22 +19,12 @@ async def get_entry_service() -> AsyncGenerator[EntryService, None]:
         yield EntryService(db)
 
 
-@router.post("/entries/")
-async def create_entry(entry_data: EntryCreate, entry_service: EntryService = Depends(get_entry_service)):
-    """Create a new journal entry."""
+@router.post("/entries", response_model=Entry, status_code=201)
+async def create_entry(entry_data: EntryCreate, response: Response, entry_service: EntryService = Depends(get_entry_service)):
     try:
-        entry = Entry(
-            work=entry_data.work,
-            struggle=entry_data.struggle, 
-            intention=entry_data.intention
-        )
-        
         created_entry = await entry_service.create_entry(entry_data.model_dump())
-        
-        return {
-            "detail": "Entry created successfully", 
-            "entry": created_entry
-        }
+        response.headers["X-Detail"] = "Entry created successfully"
+        return created_entry
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"Error creating entry: {str(e)}")
 
