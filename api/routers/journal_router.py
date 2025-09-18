@@ -19,24 +19,19 @@ async def get_entry_service() -> AsyncGenerator[EntryService, None]:
     async with PostgresDB() as db:
         yield EntryService(db)
 
+
 @router.post("/entries/")
 async def create_entry(entry_data: EntryCreate, entry_service: EntryService = Depends(get_entry_service)):
     """Create a new journal entry."""
     try:
-        # Create the full entry with auto-generated fields
         entry = Entry(
             work=entry_data.work,
             struggle=entry_data.struggle, 
             intention=entry_data.intention
         )
         
-        # Convert to dict but keep datetime objects for database
-        entry_dict = entry.model_dump()
+        created_entry = await entry_service.create_entry(entry_data.model_dump())
         
-        # Store the entry in the database (datetime objects are fine for PostgreSQL)
-        created_entry = await entry_service.db.create_entry(entry_dict)
-        
-        # Return success response (FastAPI handles datetime serialization automatically)
         return {
             "detail": "Entry created successfully", 
             "entry": created_entry
@@ -48,56 +43,40 @@ async def create_entry(entry_data: EntryCreate, entry_service: EntryService = De
 @router.get("/entries")
 async def get_all_entries(entry_service: EntryService = Depends(get_entry_service)):
     """Get all journal entries."""
-    try:
-        entries = await entry_service.get_all_entries()
-        return {"entries": entries, "count": len(entries)}
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error retrieving entries: {str(e)}")
+    result = await entry_service.get_all_entries()
+    if not result:
+        raise HTTPException(status_code=404, detail="No entries found")
+    return {"entries": result, "count": len(result)}
 
 
 #Define response model as Entry to utilize "model_config" for datetime formatting.
 @router.get("/entries/{entry_id}", response_model=Entry)
-async def get_entry(request: Request, entry_id: str, entry_service: EntryService = Depends(get_entry_service)):
-    async with PostgresDB() as db:
-        entry_service = EntryService(db)
-        result = await entry_service.get_entry(entry_id)
+async def get_entry(entry_id: str, entry_service: EntryService = Depends(get_entry_service)):
+    """Get a specific journal entry"""
+    result = await entry_service.get_entry(entry_id)
     if not result:
-
         raise HTTPException(status_code=404, detail="Entry not found")
-
     return result
    
 
 @router.patch("/entries/{entry_id}")
-async def update_entry(request: Request, entry_id: str, entry_update: dict):
-    async with PostgresDB() as db:
-        entry_service = EntryService(db)
-        result = await entry_service.update_entry(entry_id, entry_update)
+async def update_entry(entry_id: str, entry_update: dict, entry_service: EntryService = Depends(get_entry_service)):
+    """Update a journal entry"""
+    result = await entry_service.update_entry(entry_id, entry_update)
     if not result:
-    
         raise HTTPException(status_code=404, detail="Entry not found")
-  
     return result
 
 
 @router.delete("/entries/{entry_id}")
-async def delete_entry(request: Request, entry_id: str, entry_service: EntryService = Depends(get_entry_service)):
-    
-    async with PostgresDB() as db:
-        entry_service = EntryService(db)
-        result = await entry_service.delete_entry(entry_id)
-    if not result:
-        
-        raise HTTPException(status_code=404, detail="Entry not found")
-    
+async def delete_entry(entry_id: str, entry_service: EntryService = Depends(get_entry_service)):
+    """Delete a specific journal entry"""
+    await entry_service.delete_entry(entry_id)
     return {"detail": "Entry deleted"}
 
 
 @router.delete("/entries")
-async def delete_all_entries(request: Request):
-   
-    async with PostgresDB() as db:
-        entry_service = EntryService(db)
-        await entry_service.delete_all_entries()
-
+async def delete_all_entries(entry_service: EntryService = Depends(get_entry_service)):
+    """Delete all journal entries"""
+    await entry_service.delete_all_entries()
     return {"detail": "All entries deleted"}
