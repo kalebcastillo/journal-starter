@@ -1,6 +1,6 @@
 services:
   myapi:
-    image: myapi:1.0
+    image: kalebcastillo/myapi:1.0
     ports:
       - "8000:8000"
     env_file: ["../.env"]
