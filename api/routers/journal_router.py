@@ -4,6 +4,7 @@ from fastapi import APIRouter, HTTPException, Depends, Response
 from repositories.postgres_repository import PostgresDB
 from services.entry_service import EntryService
 from models.entry import Entry, EntryCreate
+from models.analysis_response import AnalysisResponse
 
 
 router = APIRouter()
@@ -69,3 +70,16 @@ async def delete_all_entries(entry_service: EntryService = Depends(get_entry_ser
     """Delete all journal entries"""
     await entry_service.delete_all_entries()
     return {"detail": "All entries deleted"}
+
+@router.post("/entries/{entry_id}/analyze", response_model=AnalysisResponse, status_code=200)
+async def analyze_entry(entry_id: str, entry_service: EntryService = Depends(get_entry_service)):
+    """Analyze a journal entry using LLM."""
+    try:
+        analysis_result = await entry_service.analyze_entry(entry_id)
+        if not analysis_result:
+            raise HTTPException(status_code=404, detail="Entry not found")
+        return analysis_result
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error analyzing entry: {str(e)}")

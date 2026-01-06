@@ -3,9 +3,6 @@
 {
   "name": "Journal API",
   "dockerComposeFile": ["docker-compose.yml"],
-  "features": {
-    "ghcr.io/devcontainers/features/azure-cli:1": {}
-  },
   "service": "devcontainer",
   "runServices": ["postgres", "devcontainer"],
   "customizations": {
